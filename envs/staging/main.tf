@@ -174,7 +174,7 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
   public_key = var.admin_ssh_public_key
 }
 
-  network_interface_id = [azurerm_network_interface.web_nic.id]
+  network_interface_ids = [azurerm_network_interface.web_nic.id]
 
   os_disk {
     caching              = "ReadWrite"
