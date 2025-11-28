@@ -17,7 +17,7 @@ jobs:
       TF_VAR_location: "East US"
       TF_VAR_admin_username: "azureuser"
       TF_VAR_admin_password: ${{ secrets.ADMIN_PASSWORD }}
-      TF_VAR_admin_ssh_public_key: ${{ secrets.ADMIN_SSH_PUBLIC_KEY }}  #JUST ADDED
+      TF_VAR_admin_ssh_public_key: ${{ secrets.ADMIN_SSH_PUBLIC_KEY }}  #JUST ADDED2
       
 
     steps:
