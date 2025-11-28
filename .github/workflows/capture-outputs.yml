@@ -1,0 +1,55 @@
+name: Capture Terraform Outputs
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "staging"
+
+env:
+  TF_VAR_location: "East US"
+  TF_VAR_admin_username: "azureuser"
+  TF_VAR_admin_password: ${{ secrets.ADMIN_PASSWORD }}
+  TF_VAR_admin_ssh_public_key: ${{ secrets.ADMIN_SSH_PUBLIC_KEY }}  #JUST ADDED
+####
+jobs:
+  capture_outputs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: envs/${{ github.event.inputs.environment }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.7
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Capture Outputs
+      run: |
+        echo "web_vm_ip=$(terraform output -raw web_vm_private_ip)" >> $GITHUB_ENV
+        echo "app_vm_ip=$(terraform output -raw app_vm_private_ip)" >> $GITHUB_ENV
+        echo "web_vm_id=$(terraform output -raw web_vm_id)" >> $GITHUB_ENV
+        echo "app_vm_id=$(terraform output -raw app_vm_id)" >> $GITHUB_ENV
+        echo "log_workspace_id=$(terraform output -raw log_analytics_workspace_id)" >> $GITHUB_ENV
+
+    - name: Log Outputs
+      run: |
+        echo "🌐 Web VM IP: ${{ env.web_vm_ip }}"
+        echo "🌐 App VM IP: ${{ env.app_vm_ip }}"
+        echo "🆔 Web VM ID: ${{ env.web_vm_id }}"
+        echo "🆔 App VM ID: ${{ env.app_vm_id }}"
+        echo "📊 Log Analytics Workspace ID: ${{ env.log_workspace_id }}"
