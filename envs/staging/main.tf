@@ -205,7 +205,7 @@ resource "azurerm_linux_virtual_machine" "app_vm" {
         public_key = var.admin_ssh_public_key 
     }
 
-  network_interface_ids = [azurerm_network_interface.app_nic.id]
+  network_interface_id = [azurerm_network_interface.app_nic.id]
 
   os_disk {
     caching              = "ReadWrite"
