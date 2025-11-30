@@ -3,19 +3,19 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "network_rg" {
-  name     = "NetRG1"
+  name     = "NetRG2-Prod"
   location = var.location
 }
 # VNET AND SUBNETS
 resource "azurerm_virtual_network" "vnet" {
-  name                = "MyVnet1.0"
+  name                = "MyVnet2.0-Prod"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
   address_space       = ["10.0.0.0/16"]
 }
 
 resource "azurerm_subnet" "web_subnet" {
-  name                 = "WebSubnet1.0"
+  name                 = "WebSubnet2.0-Prod"
   resource_group_name  = azurerm_resource_group.network_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
@@ -23,7 +23,7 @@ resource "azurerm_subnet" "web_subnet" {
 }
 
 resource "azurerm_subnet" "app_subnet" {
-  name                 = "AppSubnet1.0"
+  name                 = "AppSubnet2.0-Prod"
   resource_group_name  = azurerm_resource_group.network_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.2.0/24"]
@@ -32,7 +32,7 @@ resource "azurerm_subnet" "app_subnet" {
 
 # NSGS
 resource "azurerm_network_security_group" "web_nsg" {
-  name                = "WebNSG1.0"
+  name                = "WebNSG2.0-Prod"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
 
@@ -74,7 +74,7 @@ resource "azurerm_network_security_group" "web_nsg" {
 }
 
 resource "azurerm_network_security_group" "app_nsg" {
-  name                = "AppNSG1.0"
+  name                = "AppNSG2.0-Prod"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
 
@@ -129,7 +129,7 @@ resource "azurerm_subnet_network_security_group_association" "app_nsg_assoc" {
 
 # NICS
 resource "azurerm_network_interface" "web_nic" {
-  name                = "WebVM1.0Nic"
+  name                = "WebVM2.0Nic-Prod"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
 
@@ -142,7 +142,7 @@ resource "azurerm_network_interface" "web_nic" {
 }
 
 resource "azurerm_network_interface" "app_nic" {
-  name                = "AppVM1.0Nic"
+  name                = "AppVM2.0Nic-Prod"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
 
@@ -156,7 +156,8 @@ resource "azurerm_network_interface" "app_nic" {
 
 # Virtual Machines
 resource "azurerm_linux_virtual_machine" "web_vm" {
-  name                = "WebVM1.0"
+  name                = "WebVM2.0-Prod"
+  computer_name       = "webvm2"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
   size                = "Standard_B1ms"
@@ -168,7 +169,7 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
   #If you leave this out and don’t provide a password, Terraform will fail. If you set it to false, you must provide admin_password.
   #disable password login for the VM: SSH key authentication
   disable_password_authentication = true
-  
+
   admin_ssh_key 
     { 
         username   = var.admin_username 
@@ -189,14 +190,15 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
     version   = "latest"
   }
   tags = {
-    environment = "staging" # change to "production" in production/main.tf
+    environment = "production" # change to "production" in production/main.tf
   }
   #This adds a tag to every VM (or resource) indicating its environment. Benefits
 
 }
 
 resource "azurerm_linux_virtual_machine" "app_vm" {
-  name                = "AppVM1.0"
+  name                = "AppVM2.0-prod"
+  computer_name       = "appvm2"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
   size                = "Standard_B1ms"
@@ -218,14 +220,14 @@ resource "azurerm_linux_virtual_machine" "app_vm" {
     version   = "latest"
   }
   tags = {
-    environment = "staging" # change to "production" in production/main.tf
+    environment = "production" # change to "production" in production/main.tf
   }
 
 }
 
 # Log Analytics Workspace
 resource "azurerm_log_analytics_workspace" "log_workspace" {
-  name                = "MyLogWorkspace32"
+  name                = "MyLogWorkspace-Prod"
   location            = var.location
   resource_group_name = azurerm_resource_group.network_rg.name
   sku                 = "PerGB2018"
